@@ -1,7 +1,12 @@
 plugins {
+    // Говорит что это java приложение и запускает соответствующие процессы
     id 'java'
+    // показывает что проект с использование SpringBoot
     id 'org.springframework.boot' version '3.2.5'
+    //плагин для управления зависимостями Spring Boot.
     id 'io.spring.dependency-management' version '1.1.4'
+    //проверяет покрытие тестами
+    id 'jacoco'
 }
 
 group = 'org.example'
@@ -12,9 +17,16 @@ repositories {
 }
 
 dependencies {
+    // базовый стартер Spring Boot. Он добавляет основные библиотеки и настройки,
+    // которые нужны для запуска приложения на Spring Boot.
     implementation 'org.springframework.boot:spring-boot-starter'
+    // для создания веб-приложения: поддержку HTTP, REST-контроллеры,
+    // встроенный сервер (обычно Tomcat),
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    //  добавляет поддержку JPA (Java Persistence API). Он включает в себя Hibernate
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // для валидации
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
