@@ -8,8 +8,25 @@ build/
 *.iws
 *.iml
 *.ipr
+*.xml
 out/
 
+# Хранилище макетов панелей инструментов
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+
+# Файлы конфигурации модулей
+.idea/modules.xml
+.idea/.name
+
+# Файлы конфигурации плагинов
+.idea/libraries/
+
+# Файлы чувствительные к безопасности
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
 ### Eclipse ###
 .apt_generated
 .classpath

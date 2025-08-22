@@ -12,25 +12,46 @@ plugins {
 group = 'org.example'
 version = '1.0-SNAPSHOT'
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // явно указал версию, чтобы  gradle не на пакостил нам и не подключил другую
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // базовый стартер Spring Boot. Он добавляет основные библиотеки и настройки,
-    // которые нужны для запуска приложения на Spring Boot.
-    implementation 'org.springframework.boot:spring-boot-starter'
-    // для создания веб-приложения: поддержку HTTP, REST-контроллеры,
-    // встроенный сервер (обычно Tomcat),
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    //  добавляет поддержку JPA (Java Persistence API). Он включает в себя Hibernate
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // для валидации
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.springframework.boot:spring-boot-starter'             // базовый стартер Spring Boot. Он добавляет основные библиотеки и настройки, которые нужны для запуска приложения на Spring Boot.
+    implementation 'org.springframework.boot:spring-boot-starter-web'         // для создания веб-приложения: поддержку HTTP, REST-контроллеры, встроенный сервер (обычно Tomcat),
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    //  добавляет поддержку JPA (Java Persistence API). Он включает в себя Hibernate
+    implementation 'org.springframework.boot:spring-boot-starter-validation'  // для валидации
+
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    runtimeOnly 'org.postgresql:postgresql' // Для работы с PostgreSQL в продакшене
+    testRuntimeOnly 'com.h2database:h2'     // только для тестов
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform()           // используем платформу для jUnit5 тестов, без этого будет jUnit 4
+    finalizedBy jacocoTestReport // запускает генерацию отчета при успешном прохождении тестов
+}
+
+bootJar {
+    archiveFileName = "planner-app.jar" // собирает jar файл внутри контейнера и дает ему заданное имя.
+                                        // команда ./gradlew bootJar создает этот jar локально в IDE если необходимо
+}
+// отчет о покрытии тестами
+jacocoTestReport {
+    dependsOn test // Сначала выполняются тесты
+    reports {
+        xml.required = true    // Для CI-систем (например, SonarQube)  XML-отчёт Используется CI-системами. Например, SonarQube анализирует его для отображения метрик.
+        csv.required = false   // Обычно не нужен
+        html.required = true   // Визуальный отчёт для разработчика локально build/reports/jacoco/test/html/index.html в браузере https://www.jacoco.org/jacoco/trunk/doc/resources/report.png
+                               // Для нашего проекта используем команду ./gradlew test jacocoTestReport чтобы появилась папка build и отчеты.
+    }
 }
