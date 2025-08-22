@@ -1,0 +1,47 @@
+# Описание сервисов(контейнеров) которые должны быть развернуты
+services:
+  # описание контейнера
+  db:
+    image: postgres:latest
+    # имя которое необходимо присвоить контейнеру
+    container_name: postgres
+    # порт на котором он будет запущен
+    ports:
+      - "5432:5432"
+    # настройки монтирования (Volume)
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/
+    # переменные окружения
+    environment:
+      - POSTGRES_DB=planner
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=12345
+    # описание способа проверки, что контейнер в рабочем состоянии
+    healthcheck:
+      # указываем, какую команду выполнить внутри контейнера для проверки его статуса
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      # через какое время после запуска начинать проверку
+      timeout: 5s
+      # интервал повторов проверки
+      interval: 5s
+      # количество попыток
+      retries: 10
+    networks:
+      - planner-network
+
+  plannerapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: planner
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - db
+    networks:
+      - planner-network
+# определяем вид сети получаем изолированное окружение контейнеров, где они могут общаться по имени
+networks:
+  planner-network:
+    driver: bridge
